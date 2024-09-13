@@ -1,0 +1,53 @@
+const board = ["", "", "", "", "", "", "", "", ""];
+let currentPlayer = "X"; // User is always "X"
+let gameActive = true;
+
+const winConditions = [
+    [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
+    [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
+    [0, 4, 8], [2, 4, 6]             // Diagonals
+];
+
+function makeMove(index) {
+    if (gameActive && board[index] === "") {
+        board[index] = currentPlayer;
+        document.getElementById(`cell-${index}`).textContent = currentPlayer;
+        checkResult();
+        if (gameActive) {
+            computerMove();
+        }
+    }
+}
+
+function computerMove() {
+    const availableMoves = board.map((val, idx) => val === "" ? idx : null).filter(val => val !== null);
+    const randomMove = availableMoves[Math.floor(Math.random() * availableMoves.length)];
+    if (randomMove !== undefined) {
+        board[randomMove] = "O";
+        document.getElementById(`cell-${randomMove}`).textContent = "O";
+        checkResult();
+    }
+}
+
+function checkResult() {
+    for (let i = 0; i < winConditions.length; i++) {
+        const [a, b, c] = winConditions[i];
+        if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+            document.getElementById('status').textContent = `${board[a]} wins!`;
+            gameActive = false;
+            return;
+        }
+    }
+    
+    if (!board.includes("")) {
+        document.getElementById('status').textContent = "It's a tie!";
+        gameActive = false;
+    }
+}
+
+function resetGame() {
+    board.fill("");
+    document.querySelectorAll(".cell").forEach(cell => cell.textContent = "");
+    document.getElementById('status').textContent = "";
+    gameActive = true;
+}
